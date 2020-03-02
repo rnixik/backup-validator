@@ -41,6 +41,12 @@ class BackupRestorer
         $this->execute($restoreCommand);
     }
 
+    public function cleanup(array $restoreConfig)
+    {
+        $stopContainerCommand = "docker stop " . escapeshellarg($restoreConfig['container_name']) . " || true";
+        $this->execute($stopContainerCommand);
+    }
+
     private function execute(string $command)
     {
         $output = [];

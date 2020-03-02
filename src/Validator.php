@@ -94,6 +94,8 @@ class Validator
             $this->output('"' . $e->testName . '" - ERROR: ' . $e->output);
         }
 
+        $this->backupRestorer->cleanup($backupConfig['restore']);
+
         return $successful;
     }
 
