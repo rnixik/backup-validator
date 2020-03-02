@@ -10,6 +10,7 @@ class Alerting
      * @param array $backupAlertingConfig
      * @param bool $backupIsValid
      * @param string $outputBuffer
+     * @return bool
      * @throws BadConfigException
      */
     public function alertIfNecessary(
@@ -18,18 +19,21 @@ class Alerting
         array $backupAlertingConfig,
         bool $backupIsValid,
         string $outputBuffer
-    ) {
+    ): bool {
+        $shouldAlert = $this->shouldAlert($backupIsValid, $backupAlertingConfig['always_alert'] ?? []);
+
         foreach ($backupAlertingConfig['channels'] as $channelName) {
             if (!array_key_exists($channelName, $channelsConfig)) {
                 throw new BadConfigException("Channel '$channelName' not found in alert_channels");
             }
-
             $channel = $this->buildChannel($channelsConfig[$channelName]);
-            $shouldAlert = $this->shouldAlert($backupIsValid, $backupAlertingConfig['always_alert'] ?? []);
+
             if ($shouldAlert) {
                 $channel->send($backupIsValid, $backupName, $outputBuffer);
             }
         }
+
+        return $shouldAlert;
     }
 
     /**

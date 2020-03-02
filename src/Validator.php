@@ -57,7 +57,14 @@ class Validator
                 $this->output($e->getMessage());
             }
 
-            $this->alerting->alertIfNecessary($name, $config['alert_channels'], $backupConfig['alerting'], $successful, $this->outputBuffer);
+            try {
+                $wasAlerted = $this->alerting->alertIfNecessary($name, $config['alert_channels'], $backupConfig['alerting'], $successful, $this->outputBuffer);
+                if ($wasAlerted) {
+                    $this->output("Notifications have been sent");
+                }
+            } catch (\Exception $e) {
+                $this->output($e->getMessage());
+            }
         }
     }
 
