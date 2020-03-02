@@ -1,0 +1,47 @@
+#!/usr/bin/env php
+<?php
+
+use BackupValidator\Alerting\Alerting;
+use BackupValidator\BackupRestorer\BackupRestorer;
+use BackupValidator\BackupSourceFinder\BackupSourceFinder;
+use BackupValidator\ConfigLoader\ConfigLoader;
+use BackupValidator\TestsRunner\TestsRunner;
+use BackupValidator\Validator;
+
+require_once __DIR__ . '/vendor/autoload.php';
+
+$configLoader = new ConfigLoader(new \Spyc());
+$backupSourceFinder = new BackupSourceFinder();
+$backupRestorer = new BackupRestorer();
+$testsRunner = new TestsRunner();
+$alerting = new Alerting();
+
+$validator = new Validator(
+    $configLoader,
+    $backupSourceFinder,
+    $backupRestorer,
+    $testsRunner,
+    $alerting
+);
+
+$cliOptions = getopt('', [
+    "config::",
+]);
+
+if (!empty($cliOptions['config'])) {
+    $configFile = $cliOptions['config'];
+} else {
+    $configFile = __DIR__ . '/config.yml';
+}
+
+if (!file_exists($configFile)) {
+    echo "Config file '$configFile' does not exist\n";
+    exit(1);
+}
+
+if (!is_readable($configFile)) {
+    echo "Config file '$configFile' is not readable\n";
+    exit(2);
+}
+
+$validator->validate($configFile);

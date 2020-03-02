@@ -1,0 +1,27 @@
+{
+  "name": "rnix/backup-validator",
+  "description": "Validate DB backup files and alert",
+  "minimum-stability": "stable",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Roman Nix",
+      "email": "rnix@yandex.ru"
+    }
+  ],
+  "require": {
+    "php": "^7.2",
+    "mustangostang/spyc": "0.6.3",
+    "guzzlehttp/guzzle": "6.5.2"
+  },
+  "autoload": {
+    "psr-4": {
+      "BackupValidator\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "BackupValidator\\Tests\\": "tests/"
+    }
+  }
+}
