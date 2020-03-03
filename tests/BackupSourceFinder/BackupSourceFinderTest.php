@@ -3,11 +3,12 @@
 namespace BackupValidator\Tests\BackupSourceFinder;
 
 use BackupValidator\BackupSourceFinder\BackupSourceFinder;
+use BackupValidator\BackupSourceFinder\FileNotFoundException;
 use PHPUnit\Framework\TestCase;
 
 class BackupSourceFinderTest extends TestCase
 {
-    public function testFindBackupFile(): void
+    public function testFindBackupFileOk(): void
     {
         $dir = sys_get_temp_dir();
         $files = [
@@ -20,6 +21,7 @@ class BackupSourceFinderTest extends TestCase
         }
 
         $backupSourceFinder = new BackupSourceFinder();
+        /** @noinspection PhpUnhandledExceptionInspection */
         $actualFile = $backupSourceFinder->findBackupFile([
             'type' => 'latest',
             'pattern' => "$dir/awesome_*.dump",
@@ -30,5 +32,18 @@ class BackupSourceFinderTest extends TestCase
         foreach ($files as $file => $time) {
             @unlink("$dir/$file");
         }
+    }
+
+    public function testFindBackupFileNotFound(): void
+    {
+        $dir = sys_get_temp_dir();
+
+        $backupSourceFinder = new BackupSourceFinder();
+        $this->expectException(FileNotFoundException::class);
+        /** @noinspection PhpUnhandledExceptionInspection */
+        $backupSourceFinder->findBackupFile([
+            'type' => 'latest',
+            'pattern' => "$dir/fake_*.dump",
+        ]);
     }
 }
