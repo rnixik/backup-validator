@@ -42,13 +42,8 @@ class Slack implements ChannelInterface
                     [
                         'fallback' => $subject,
                         "color" => $isAlertTesting ? "#0000D0" : "#D00000",
-                        "fields" => [
-                            [
-                                "title" => $subject,
-                                "value" => $body,
-                                "short" => false,
-                            ],
-                        ],
+                        'pretext' => $subject,
+                        'text' => $body,
                     ],
                 ],
             ],
