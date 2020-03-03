@@ -119,7 +119,7 @@ class Validator
 
     private function output(string $message, bool $terminateLine = true, bool $withTimeStamp = false)
     {
-        $line = ($withTimeStamp ? (date('Y-m-d H:i:s') . ': ') : '') . $message . ($terminateLine ? PHP_EOL : '');
+        $line = ($withTimeStamp ? (date('c') . ': ') : '') . $message . ($terminateLine ? PHP_EOL : '');
         echo $line;
         $this->outputBuffer .= $line;
     }
