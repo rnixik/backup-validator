@@ -4,12 +4,14 @@ namespace BackupValidator;
 
 use BackupValidator\Alerting\Alerting;
 use BackupValidator\BackupRestorer\BackupRestorer;
+use BackupValidator\BackupRestorer\RestoreException;
 use BackupValidator\BackupSourceFinder\BackupSourceFinder;
 use BackupValidator\BackupSourceFinder\BadConfigException;
 use BackupValidator\BackupSourceFinder\FileNotFoundException;
 use BackupValidator\ConfigLoader\ConfigLoader;
 use BackupValidator\TestsRunner\TestErrorException;
 use BackupValidator\TestsRunner\TestsRunner;
+use Exception;
 
 class Validator
 {
@@ -52,7 +54,7 @@ class Validator
             $this->outputBuffer = '';
             try {
                 $successful = $this->validateBackup($name, $backupConfig);
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 $successful = false;
                 $this->output($e->getMessage());
             }
@@ -68,7 +70,7 @@ class Validator
                 if ($wasAlerted) {
                     $this->output("Notifications have been sent");
                 }
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 $this->output($e->getMessage());
             }
         }
@@ -80,6 +82,7 @@ class Validator
      * @return bool
      * @throws BadConfigException
      * @throws FileNotFoundException
+     * @throws RestoreException
      */
     private function validateBackup(string $name, array $backupConfig): bool
     {

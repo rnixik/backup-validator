@@ -4,6 +4,12 @@ namespace BackupValidator\BackupRestorer;
 
 class BackupRestorer
 {
+    /**
+     * @param string $backupFilename
+     * @param array $restoreConfig
+     * @param callable $outputFunction
+     * @throws RestoreException
+     */
     public function restore(string $backupFilename, array $restoreConfig, callable $outputFunction)
     {
         $stopContainerCommand = "docker stop " . escapeshellarg($restoreConfig['container_name']) . " 2>&1 || true";
@@ -45,12 +51,23 @@ class BackupRestorer
         $this->execute($restoreCommand, $outputFunction, $restoreConfig['verbose'] ?? false);
     }
 
+    /**
+     * @param array $restoreConfig
+     * @param callable $outputFunction
+     * @throws RestoreException
+     */
     public function cleanup(array $restoreConfig, callable $outputFunction)
     {
         $stopContainerCommand = "docker stop " . escapeshellarg($restoreConfig['container_name']) . " 2>&1 || true";
         $this->execute($stopContainerCommand, $outputFunction, $restoreConfig['verbose'] ?? false);
     }
 
+    /**
+     * @param string $command
+     * @param callable $outputFunction
+     * @param bool $verbose
+     * @throws RestoreException
+     */
     private function execute(string $command, callable $outputFunction, bool $verbose = false)
     {
         if ($verbose) {
