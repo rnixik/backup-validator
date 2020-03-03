@@ -31,6 +31,7 @@ backups:
       container_name: "awesome-validator"
       database: awesome
       user: awesome_user
+      verbose: true
     tests:
       - name: Users count
         sql: "SELECT COUNT(*) FROM users"

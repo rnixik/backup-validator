@@ -4,10 +4,10 @@ namespace BackupValidator\BackupRestorer;
 
 class BackupRestorer
 {
-    public function restore(string $backupFilename, array $restoreConfig)
+    public function restore(string $backupFilename, array $restoreConfig, callable $outputFunction)
     {
         $stopContainerCommand = "docker stop " . escapeshellarg($restoreConfig['container_name']) . " || true";
-        $this->execute($stopContainerCommand);
+        $this->execute($stopContainerCommand, $outputFunction, $restoreConfig['verbose'] ?? false);
 
         // docker run --rm -v /var/backups/db/some.dump:/var/backups/db/backup.dump -e POSTGRES_USER=user -e POSTGRES_DB=dbname --name some-validator -d postgres:latest
         $runContainerCommand = [
@@ -26,11 +26,11 @@ class BackupRestorer
             escapeshellarg($restoreConfig['image']),
         ];
 
-        $this->execute(implode(' ', $runContainerCommand));
+        $this->execute(implode(' ', $runContainerCommand), $outputFunction, $restoreConfig['verbose'] ?? false);
 
         $waitCommand = "docker exec " . escapeshellarg($restoreConfig['container_name'])
             . " bash -c 'while ! pg_isready; do sleep 1; done;'";
-        $this->execute($waitCommand);
+        $this->execute($waitCommand, $outputFunction, $restoreConfig['verbose'] ?? false);
 
         sleep(1);
 
@@ -38,19 +38,28 @@ class BackupRestorer
             . " pg_restore -e -U " . escapeshellarg($restoreConfig['user'])
             . " -d " . escapeshellarg($restoreConfig['database'])
             . " /var/backups/db/backup.dump";
-        $this->execute($restoreCommand);
+        $this->execute($restoreCommand, $outputFunction, $restoreConfig['verbose'] ?? false);
     }
 
-    public function cleanup(array $restoreConfig)
+    public function cleanup(array $restoreConfig, callable $outputFunction)
     {
         $stopContainerCommand = "docker stop " . escapeshellarg($restoreConfig['container_name']) . " || true";
-        $this->execute($stopContainerCommand);
+        $this->execute($stopContainerCommand, $outputFunction, $restoreConfig['verbose'] ?? false);
     }
 
-    private function execute(string $command)
+    private function execute(string $command, callable $outputFunction, bool $verbose = false)
     {
+        if ($verbose) {
+            $outputFunction($command);
+        }
+
         $output = [];
         exec($command, $output, $execCode);
+
+        if ($verbose) {
+            $outputFunction(implode(' ', $output));
+        }
+
         if ($execCode != 0) {
             throw new RestoreException(implode(' ', $output), $execCode);
         }

@@ -79,19 +79,21 @@ class Validator
     {
         $successful = true;
 
+        $outputCallable = function (string $message, bool $terminateLine = true) {
+            $this->output($message, $terminateLine);
+        };
+
         $this->output("Validating backup for {$name}");
         $this->output("Finding backup file...", false);
         $backupFilename = $this->backupSourceFinder->findBackupFile($backupConfig['source']);
         $this->output("OK");
         $this->output("Restoring $backupFilename...", false);
-        $this->backupRestorer->restore($backupFilename, $backupConfig['restore']);
+        $this->backupRestorer->restore($backupFilename, $backupConfig['restore'], $outputCallable);
         $this->output('OK');
 
         try {
             $this->output("Running tests:");
-            $runResult = $this->testsRunner->run($backupConfig['restore'], $backupConfig['tests'], function (string $message, bool $terminateLine = true) {
-                $this->output($message, $terminateLine);
-            });
+            $runResult = $this->testsRunner->run($backupConfig['restore'], $backupConfig['tests'], $outputCallable);
             $this->output("Successful: {$runResult->successfulNum}, Failed: {$runResult->failedNum}");
             if ($runResult->failedNum) {
                 $successful = false;
@@ -101,7 +103,7 @@ class Validator
             $this->output('"' . $e->testName . '" - ERROR: ' . $e->output);
         }
 
-        $this->backupRestorer->cleanup($backupConfig['restore']);
+        $this->backupRestorer->cleanup($backupConfig['restore'], $outputCallable);
 
         return $successful;
     }
