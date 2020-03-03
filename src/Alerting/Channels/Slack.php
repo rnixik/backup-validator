@@ -46,7 +46,7 @@ class Slack implements ChannelInterface
                             [
                                 "title" => $subject,
                                 "value" => $body,
-                                "short" => true,
+                                "short" => false,
                             ],
                         ],
                     ],
