@@ -9,7 +9,8 @@ class BackupRestorer
         $stopContainerCommand = "docker stop " . escapeshellarg($restoreConfig['container_name']) . " || true";
         $this->execute($stopContainerCommand, $outputFunction, $restoreConfig['verbose'] ?? false);
 
-        // docker run --rm -v /var/backups/db/some.dump:/var/backups/db/backup.dump -e POSTGRES_USER=user -e POSTGRES_DB=dbname --name some-validator -d postgres:latest
+        // docker run --rm -v /var/backups/db/some.dump:/var/backups/db/backup.dump \
+        //   -e POSTGRES_USER=user -e POSTGRES_DB=dbname --name some-validator -d postgres:latest
         $runContainerCommand = [
             'docker',
             'run',

@@ -58,7 +58,13 @@ class Validator
             }
 
             try {
-                $wasAlerted = $this->alerting->alertIfNecessary($name, $config['alert_channels'], $backupConfig['alerting'], $successful, $this->outputBuffer);
+                $wasAlerted = $this->alerting->alertIfNecessary(
+                    $name,
+                    $config['alert_channels'],
+                    $backupConfig['alerting'],
+                    $successful,
+                    $this->outputBuffer
+                );
                 if ($wasAlerted) {
                     $this->output("Notifications have been sent");
                 }
