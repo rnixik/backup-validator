@@ -6,7 +6,7 @@ class BackupRestorer
 {
     public function restore(string $backupFilename, array $restoreConfig, callable $outputFunction)
     {
-        $stopContainerCommand = "docker stop " . escapeshellarg($restoreConfig['container_name']) . " || true";
+        $stopContainerCommand = "docker stop " . escapeshellarg($restoreConfig['container_name']) . " 2>&1 || true";
         $this->execute($stopContainerCommand, $outputFunction, $restoreConfig['verbose'] ?? false);
 
         // docker run --rm -v /var/backups/db/some.dump:/var/backups/db/backup.dump \
@@ -27,12 +27,13 @@ class BackupRestorer
             escapeshellarg($restoreConfig['container_name']),
             '-d',
             escapeshellarg($restoreConfig['image']),
+            '2>&1',
         ];
 
         $this->execute(implode(' ', $runContainerCommand), $outputFunction, $restoreConfig['verbose'] ?? false);
 
         $waitCommand = "docker exec " . escapeshellarg($restoreConfig['container_name'])
-            . " bash -c 'while ! pg_isready; do sleep 1; done;'";
+            . " bash -c 'while ! pg_isready; do sleep 1; done;' 2>&1";
         $this->execute($waitCommand, $outputFunction, $restoreConfig['verbose'] ?? false);
 
         sleep(1);
@@ -40,13 +41,13 @@ class BackupRestorer
         $restoreCommand = "docker exec " . escapeshellarg($restoreConfig['container_name'])
             . " pg_restore -e -U " . escapeshellarg($restoreConfig['user'])
             . " -d " . escapeshellarg($restoreConfig['database'])
-            . " /var/backups/db/backup.dump";
+            . " /var/backups/db/backup.dump 2>&1";
         $this->execute($restoreCommand, $outputFunction, $restoreConfig['verbose'] ?? false);
     }
 
     public function cleanup(array $restoreConfig, callable $outputFunction)
     {
-        $stopContainerCommand = "docker stop " . escapeshellarg($restoreConfig['container_name']) . " || true";
+        $stopContainerCommand = "docker stop " . escapeshellarg($restoreConfig['container_name']) . " 2>&1 || true";
         $this->execute($stopContainerCommand, $outputFunction, $restoreConfig['verbose'] ?? false);
     }
 
