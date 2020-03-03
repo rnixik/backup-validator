@@ -2,6 +2,7 @@
 <?php
 
 use BackupValidator\Alerting\Alerting;
+use BackupValidator\Alerting\ChannelBuilder;
 use BackupValidator\BackupRestorer\BackupRestorer;
 use BackupValidator\BackupSourceFinder\BackupSourceFinder;
 use BackupValidator\ConfigLoader\ConfigLoader;
@@ -14,7 +15,8 @@ $configLoader = new ConfigLoader(new \Spyc());
 $backupSourceFinder = new BackupSourceFinder();
 $backupRestorer = new BackupRestorer();
 $testsRunner = new TestsRunner();
-$alerting = new Alerting();
+$channelBuilder = new ChannelBuilder();
+$alerting = new Alerting($channelBuilder);
 
 $validator = new Validator(
     $configLoader,
