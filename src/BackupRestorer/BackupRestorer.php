@@ -20,6 +20,8 @@ class BackupRestorer
             escapeshellarg("POSTGRES_USER={$restoreConfig['user']}"),
             '-e',
             escapeshellarg("POSTGRES_DB={$restoreConfig['database']}"),
+            '-e',
+            escapeshellarg("POSTGRES_PASSWORD={$restoreConfig['password']}"),
             '--name',
             escapeshellarg($restoreConfig['container_name']),
             '-d',

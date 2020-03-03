@@ -31,6 +31,7 @@ backups:
       container_name: "awesome-validator"
       database: awesome
       user: awesome_user
+      password: awesome_password
       verbose: true
     tests:
       - name: Users count
