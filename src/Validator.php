@@ -56,7 +56,7 @@ class Validator
                 $successful = $this->validateBackup($name, $backupConfig);
             } catch (Exception $e) {
                 $successful = false;
-                $this->output($e->getMessage());
+                $this->output($e->getMessage(), true, true);
             }
 
             try {
@@ -68,10 +68,10 @@ class Validator
                     $this->outputBuffer
                 );
                 if ($wasAlerted) {
-                    $this->output("Notifications have been sent");
+                    $this->output("Notifications have been sent", true, true);
                 }
             } catch (Exception $e) {
-                $this->output($e->getMessage());
+                $this->output($e->getMessage(), true, true);
             }
         }
     }
@@ -92,24 +92,24 @@ class Validator
             $this->output($message, $terminateLine);
         };
 
-        $this->output("Validating backup for {$name}");
-        $this->output("Finding backup file...", false);
+        $this->output("Validating backup for {$name}", true, true);
+        $this->output("Finding backup file...", false, true);
         $backupFilename = $this->backupSourceFinder->findBackupFile($backupConfig['source']);
         $this->output("OK");
-        $this->output("Restoring $backupFilename...", false);
+        $this->output("Restoring $backupFilename...", false, true);
         $this->backupRestorer->restore($backupFilename, $backupConfig['restore'], $outputCallable);
         $this->output('OK');
 
         try {
-            $this->output("Running tests:");
+            $this->output("Running tests:", true, true);
             $runResult = $this->testsRunner->run($backupConfig['restore'], $backupConfig['tests'], $outputCallable);
-            $this->output("Successful: {$runResult->successfulNum}, Failed: {$runResult->failedNum}");
+            $this->output("Successful: {$runResult->successfulNum}, Failed: {$runResult->failedNum}", true, true);
             if ($runResult->failedNum) {
                 $successful = false;
             }
         } catch (TestErrorException $e) {
             $successful = false;
-            $this->output('"' . $e->testName . '" - ERROR: ' . $e->output);
+            $this->output('"' . $e->testName . '" - ERROR: ' . $e->output, true, true);
         }
 
         $this->backupRestorer->cleanup($backupConfig['restore'], $outputCallable);
@@ -117,9 +117,9 @@ class Validator
         return $successful;
     }
 
-    private function output(string $message, bool $terminateLine = true)
+    private function output(string $message, bool $terminateLine = true, bool $withTimeStamp = false)
     {
-        $line = $message . ($terminateLine ? PHP_EOL : '');
+        $line = ($withTimeStamp ? (date('Y-m-d H:i:s') . ': ') : '') . $message . ($terminateLine ? PHP_EOL : '');
         echo $line;
         $this->outputBuffer .= $line;
     }
