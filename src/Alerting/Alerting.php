@@ -62,7 +62,7 @@ class Alerting
             return true;
         }
 
-        if (isset($alwaysAlertConfig['day_of_week']) && date('w') == $alwaysAlertConfig['day_of_week']) {
+        if (isset($alwaysAlertConfig['days_of_week']) && in_array(date('w'), $alwaysAlertConfig['days_of_week'])) {
             return true;
         }
 

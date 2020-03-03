@@ -16,7 +16,7 @@ Restores latest DB backup, runs smoke tests and alerts.
 * DB: PostgreSQL
 * Alert channels: Slack
 * Smoke tests: comparison result of SQL-query with exact value (`>=`, `<=`, `=`)
-* Testing alert system: choose a day of week to alert even if backup is valid
+* Testing alert system: choose days of week to alert even if backup is valid
 
 ## Config example:
 ```
@@ -44,7 +44,7 @@ backups:
         expected_value: 50
     alerting:
       always_alert:
-          day_of_week: 1
+          days_of_week: [1]
       channels:
         - alert_to_slack
 
