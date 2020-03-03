@@ -2,6 +2,8 @@
 
 Restores latest DB backup, runs smoke tests and alerts.
 
+![Alert example in Slack](http://s.getid.org/github/db-validator.png)
+
 ## Dependencies
 
 * PHP >= 7.2
@@ -35,7 +37,7 @@ backups:
         expected_operator: ">="
         expected_value: 1000
       - name: Offers count
-        sql: "SELECT COUNT(*) FROM tags"
+        sql: "SELECT COUNT(*) FROM posts"
         expected_operator: ">="
         expected_value: 50
     alerting:
