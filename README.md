@@ -36,7 +36,7 @@ backups:
         sql: "SELECT COUNT(*) FROM users"
         expected_operator: ">="
         expected_value: 1000
-      - name: Offers count
+      - name: Posts count
         sql: "SELECT COUNT(*) FROM posts"
         expected_operator: ">="
         expected_value: 50
