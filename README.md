@@ -65,6 +65,11 @@ alert_channels:
 2. Create `config.yml` file (you can specify path with `--config=/path/to/other.yml` option)
 3. Run `./validate`
 
+Example of crontab:
+```
+0 10 * * * /usr/bin/php /root/backup-validator/validate >/tmp/cron_backup_validator_out.log 2>/tmp/cron_backup_validator_err.log
+```
+
 ## License
 
 The MIT Licence
