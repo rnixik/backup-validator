@@ -12,9 +12,9 @@ class BackupSourceFinderTest extends TestCase
     {
         $dir = sys_get_temp_dir();
         $files = [
-            'awesome_1.dump' => strtotime('-2 day'),
-            'awesome_2.dump' => strtotime('now'),
-            'awesome_3.dump' => strtotime('-1 day'),
+            'awesome_1.dump' => strtotime('-5 day'),
+            'awesome_2.dump' => strtotime('-2 day'),
+            'awesome_3.dump' => strtotime('-3 day'),
         ];
         foreach ($files as $file => $time) {
             touch("$dir/$file", $time);
@@ -45,5 +45,31 @@ class BackupSourceFinderTest extends TestCase
             'type' => 'latest',
             'pattern' => "$dir/fake_*.dump",
         ]);
+    }
+
+    public function testFindBackupFileTooOld(): void
+    {
+        $dir = sys_get_temp_dir();
+        $files = [
+            'awesome_1.dump' => strtotime('-5 day'),
+            'awesome_2.dump' => strtotime('-2 day'),
+            'awesome_3.dump' => strtotime('-3 day'),
+        ];
+        foreach ($files as $file => $time) {
+            touch("$dir/$file", $time);
+        }
+
+        $backupSourceFinder = new BackupSourceFinder();
+        $this->expectException(FileNotFoundException::class);
+        /** @noinspection PhpUnhandledExceptionInspection */
+        $backupSourceFinder->findBackupFile([
+            'type' => 'latest',
+            'pattern' => "$dir/awesome_*.dump",
+            'not_older_than_hours' => 24,
+        ]);
+
+        foreach ($files as $file => $time) {
+            @unlink("$dir/$file");
+        }
     }
 }

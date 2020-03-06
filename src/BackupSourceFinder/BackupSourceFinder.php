@@ -31,6 +31,12 @@ class BackupSourceFinder
         reset($files);
         $latestFile = key($files);
 
+        $notOlderThanHours = $sourceConfig['not_older_than_hours'] ?? 0;
+
+        if ($notOlderThanHours && filemtime($latestFile) < strtotime("-$notOlderThanHours hour")) {
+            throw new FileNotFoundException("File too old: " . date('c', filemtime($latestFile)));
+        }
+
         return $latestFile;
     }
 }

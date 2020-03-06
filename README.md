@@ -15,7 +15,7 @@ Restores latest DB backup, runs smoke tests and alerts.
 * Sources: latest file by pattern (e.g. `/var/db/backups/*.dump`)
 * DB: PostgreSQL
 * Alert channels: Slack
-* Smoke tests: comparison result of SQL-query with exact value (`>=`, `<=`, `=`)
+* Smoke tests: comparison result of SQL-query with exact value (`>=`, `<=`, `==`)
 * Testing alert system: choose days of week to alert even if backup is valid
 
 ## Config example:
@@ -25,6 +25,7 @@ backups:
     source:
       type: latest
       pattern: /var/backups/db/awesome_*.dump
+      not_older_than_hours: 24
     restore:
       type: postgres
       image: "postgres:latest"
